@@ -42,3 +42,22 @@ done
 
 Gemini CLI (AI) に複数のIssue作成を依頼する場合、**AIが自動的に適切な待機時間を挟んで実行します。**
 そのため、ユーザーが手動で`sleep`を意識する必要はありません。
+
+---
+
+## get_recent_done_items.sh
+
+GitHub Projectsから直近で"Done"ステータスになったアイテムを取得し、タイトルとポイントを一覧表示します。
+ポイントが見積もられていないアイテムは `0` と表示されます。
+
+デフォルトでは直近10件を取得しますが、`--limit`オプションで件数を指定できます。
+
+### 使い方
+
+```bash
+# 直近10件を取得
+./scripts/get_recent_done_items.sh
+
+# 直近5件を取得
+./scripts/get_recent_done_items.sh --limit 5
+```
