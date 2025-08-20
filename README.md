@@ -61,3 +61,60 @@ GitHub Projectsから直近で"Done"ステータスになったアイテムを�
 # 直近5件を取得
 ./scripts/get_recent_done_items.sh --limit 5
 ```
+
+## git_sjis_diff.sh
+
+Shift-JISとUTF-8のファイルが混在するリポジトリで `git diff` を実行した際の文字化けを防ぐためのヘルパースクリプトです。
+
+Gitの `textconv` 機能と連携させることで、差分表示の際にShift-JISのファイルを自動的にUTF-8へ変換します。
+
+### 使い方
+
+#### 手順1: スクリプトの配置と実行権限の付与
+
+本スクリプトを任意のパスに配置し（例: `~/.git_sjis_diff.sh`）、実行権限を付与します。
+
+```bash
+# 例: ホームディレクトリにコピーする場合
+cp git_sjis_diff.sh ~/.git_sjis_diff.sh
+
+# 実行権限を付与
+chmod +x ~/.git_sjis_diff.sh
+```
+
+**前提条件:** このスクリプトは `nkf` コマンドを使用します。もしインストールされていない場合は、お使いのOSのパッケージマネージャでインストールしてください。
+(例: `brew install nkf`, `sudo apt-get install nkf`)
+
+#### 手順2: Gitへのドライバ登録
+
+スクリプトを `textconv` ドライバとしてGitに登録します。
+
+```bash
+git config --global diff.sjis-safe.textconv "~/.git_sjis_diff.sh"
+```
+
+#### 手順3: `.gitattributes` での適用
+
+文字化け対策を適用したいリポジトリの `.gitattributes` ファイル（なければ作成）に、対象のファイルとドライバを結びつける設定を記述します。
+
+**例: `.csv` ファイルに適用する場合**
+```
+*.csv diff=sjis-safe
+```
+
+**例: `.txt` と `.log` ファイルにも適用する場合**
+```
+*.csv diff=sjis-safe
+*.txt diff=sjis-safe
+*.log diff=sjis-safe
+```
+
+---
+### 補足: コミットログの文字化け対策
+
+`git diff` だけでなく、ターミナルやGitクライアントでのコミットログの文字化けも防ぎたい場合は、以下の設定を推奨します。
+
+```bash
+git config --global core.quotepath false
+git config --global i18n.commitencoding utf-8
+```
