@@ -118,3 +118,44 @@ git config --global diff.sjis-safe.textconv "~/.git_sjis_diff.sh"
 git config --global core.quotepath false
 git config --global i18n.commitencoding utf-8
 ```
+
+## normalize_text_for_diff.js
+
+契約書等のテキスト差分比較用の正規化スクリプトです。
+
+PDF/docxから抽出したテキストは、元のレイアウトによって改行位置が毎回異なることがあります。そのままdiffすると余計な差分が大量に出るため、一度正規化してから比較します。
+
+### 処理内容
+
+1. 改行・スペース・タブ（全角含む）を全部取っ払う
+2. 「。」を「。\n」に変換
+
+### 使い方
+
+```bash
+# 標準出力に出力
+node normalize_text_for_diff.js input.txt
+
+# ファイルに保存
+node normalize_text_for_diff.js input.txt -o output.normalized.txt
+```
+
+### 推奨ワークフロー
+
+```bash
+# 1. PDF/docxをテキスト化
+pdftotext input.pdf input.txt
+pandoc -f docx -t plain input.docx -o input.txt
+
+# 2. 正規化
+node normalize_text_for_diff.js old.txt -o old.normalized.txt
+node normalize_text_for_diff.js new.txt -o new.normalized.txt
+
+# 3. diff比較
+diff old.normalized.txt new.normalized.txt
+# または FileMerge等のGUIツールで比較
+```
+
+### 参考
+
+- [esa: 契約書の差分比較](https://pxgrid.esa.io/posts/3758)
